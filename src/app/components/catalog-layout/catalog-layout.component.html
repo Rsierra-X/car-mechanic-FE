@@ -1,0 +1,33 @@
+<div class="p-6 space-y-6">
+  <h1 class="text-2xl font-semibold">{{ title }}</h1>
+
+  <!-- Search form -->
+  <div class="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-end">
+    <div class="flex flex-col">
+      <label class="text-sm font-medium">Nombre</label>
+      <input
+        type="text"
+        class="border rounded px-3 py-2 w-60"
+        [(ngModel)]="search.nombre"
+        placeholder="Nombre"
+      />
+    </div>
+    <div class="flex flex-col">
+      <label class="text-sm font-medium">Fecha</label>
+      <input
+        type="date"
+        class="border rounded px-3 py-2"
+        [(ngModel)]="search.fecha"
+      />
+    </div>
+    <button
+      (click)="onBuscar()"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      Buscar
+    </button>
+  </div>
+
+  <!-- Table slot -->
+  <ng-content></ng-content>
+</div>

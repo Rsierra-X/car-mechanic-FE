@@ -1,0 +1,22 @@
+<app-catalog-layout title="Órdenes">
+  <div class="bg-white rounded-xl shadow overflow-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+      <tr>
+        <th class="text-left px-4 py-2">#</th>
+        <th class="text-left px-4 py-2">Cliente</th>
+        <th class="text-left px-4 py-2">Fecha</th>
+        <th class="text-left px-4 py-2">Estado</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let orden of ordenes">
+        <td class="px-4 py-2">{{ orden.id }}</td>
+        <td class="px-4 py-2">{{ orden.cliente }}</td>
+        <td class="px-4 py-2">{{ orden.fecha }}</td>
+        <td class="px-4 py-2">{{ orden.estado }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</app-catalog-layout>

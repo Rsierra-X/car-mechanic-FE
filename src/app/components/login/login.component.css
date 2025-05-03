@@ -1,0 +1,11 @@
+.container {
+  background-color: #f8f9fa;
+}
+.card {
+  border-radius: 10px;
+}
+
+.login-container{
+  background-image: url('../../../assets/images/login-background.jpg');
+
+}
