@@ -1,34 +1,45 @@
-import {computed, effect, Injectable, Injector, signal} from '@angular/core';
+import {computed, effect, inject, Injectable, Injector, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {of, throwError} from 'rxjs';
-import {LoadFromLocalStorageService} from '../helpers/loadFromLocalStorage/load-from-local-storage.service';
-
-const loadLoginFromLocalStorage = (): boolean => {
-  const value = localStorage.getItem('loginStatus');
-  return value ? JSON.parse(value) : false;
-}
+import {catchError, of, tap, throwError} from 'rxjs';
+import {environment} from "../../../environment/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SecurityService {
+  private readonly http = inject(HttpClient);
 
-  private _loginStatus = signal<boolean>(loadLoginFromLocalStorage());
+  private readonly _loginStatus = signal<boolean>(this.loadLoginFromLocalStorage());
   readonly loginStatus = computed(() => this._loginStatus());
 
-  constructor(private localStorageService: LoadFromLocalStorageService) {}
+  private readonly tokenKey = 'access_token';
 
-  validateLogin(username: string, password: string) {
-    if ((username || password) && username === 'Admin' && password === 'admin') {
-      this.localStorageService.saveToLocalStorage('loginStatus', true);
-      this._loginStatus.set(true); // <- ACTUALIZAS EL SIGNAL
-      return of(true);
-    }
-    return throwError(() => new Error('Credenciales incorrectas'));
+  login(username: string, password: string) {
+    return this.http.post<{ access_token: string }>(`${environment.apiUrl}/auth/login`, {
+      NombreUsuario: username,
+      Contrasena: password
+    }).pipe(
+      tap(response => {
+        localStorage.setItem(this.tokenKey, response.access_token);
+        this._loginStatus.set(true);
+      }),
+      catchError(err => {
+        this._loginStatus.set(false);
+        return throwError(() => new Error('Credenciales inválidas'));
+      })
+    );
   }
 
   logout() {
-    this.localStorageService.saveToLocalStorage('loginStatus', false);
+    localStorage.removeItem(this.tokenKey);
     this._loginStatus.set(false);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  private loadLoginFromLocalStorage(): boolean {
+    return !!localStorage.getItem(this.tokenKey);
   }
 }

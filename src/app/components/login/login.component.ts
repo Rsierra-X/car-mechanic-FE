@@ -17,15 +17,21 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private router: Router, private toastr: ToastrService, private securityService: SecurityService) {}
+  constructor(
+    private router: Router,
+    private toastr: ToastrService,
+    private securityService: SecurityService
+  ) {}
 
   onSubmit() {
-    this.securityService.validateLogin(this.username, this.password).subscribe({
-      next: result => {
-        this.router.navigate(['/dashboard']).then();
+    this.securityService.login(this.username, this.password).subscribe({
+      next: () => {
+        this.toastr.success('Inicio de sesión exitoso', 'Bienvenido');
+        this.router.navigate(['/dashboard']);
       },
-      error: error => {
-        this.toastr.error(error.error, 'Error de inicio de sesión');
+      error: (error) => {
+        const message = error?.message || 'Error de autenticación';
+        this.toastr.error(message, 'Inicio de sesión fallido');
       }
     });
   }
