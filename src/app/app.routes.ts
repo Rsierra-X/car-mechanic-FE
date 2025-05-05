@@ -5,6 +5,7 @@ import {OrdersCatalogComponent} from "./pages/orders/orders-catalog/orders-catal
 import {ConfigurationComponent} from "./pages/configuration/configuration.component";
 import {AuthGuard} from "./guards/auth.guard";
 import {ClienteComponent} from "./pages/cliente/cliente.component";
+import {InventarioComponent} from "./pages/inventario/inventario.component";
 
 export const routes: Routes = [
   {
@@ -29,6 +30,11 @@ export const routes: Routes = [
   {
     path: 'clientes',
     component: ClienteComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'inventario',
+    component: InventarioComponent,
     canActivate: [AuthGuard],
   },
   {

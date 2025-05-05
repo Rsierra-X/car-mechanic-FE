@@ -1,0 +1,77 @@
+<app-catalog-layout title="Inventario"
+                    [fields]="['Nombre']"
+                    (onSearch)="search($event)">
+  <div class="bg-white rounded-xl shadow p-6">
+    <div class="flex justify-end items-center mb-4">
+      <app-button btnId="btn-add-product"
+                  iconType="plus"
+                  btnText="Agregar Producto"
+                  btnColor="btn-blue"
+                  (btnClicked)="showModal = true">
+      </app-button>
+
+    </div>
+
+    <app-simple-table
+      [headers]="['ProductoID', 'Nombre', 'Descripcion', 'Cantidad', 'PrecioUnitario', 'Acciones']"
+      [rows]="productos"
+      [showEdit]="true"
+      (onDelete)="deleteProduct($event)"
+      (onEdit)="editProduct($event)">
+    </app-simple-table>
+  </div>
+</app-catalog-layout>
+
+<!-- Modal de agregar/editar producto -->
+<div *ngIf="showModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+    <h2 class="text-xl font-semibold mb-4">{{ isModalEdit ? 'Editar Producto' : 'Agregar Producto' }}</h2>
+
+    <form [formGroup]="productForm">
+      <div class="space-y-4">
+        <!-- Nombre -->
+        <label class="block">
+          <span class="text-gray-700">Nombre *</span>
+          <input formControlName="Nombre" type="text" class="mt-1 block w-full border rounded px-3 py-2" />
+          <div *ngIf="productForm.get('Nombre')?.invalid && productForm.get('Nombre')?.touched" class="text-red-500 text-sm">
+            Nombre es requerido.
+          </div>
+        </label>
+
+        <!-- Descripción -->
+        <label class="block">
+          <span class="text-gray-700">Descripción</span>
+          <input formControlName="Descripcion" type="text" class="mt-1 block w-full border rounded px-3 py-2" />
+        </label>
+
+        <!-- Cantidad -->
+        <label class="block">
+          <span class="text-gray-700">Cantidad *</span>
+          <input formControlName="Cantidad" type="number" class="mt-1 block w-full border rounded px-3 py-2" />
+        </label>
+
+        <!-- Precio Unitario -->
+        <label class="block">
+          <span class="text-gray-700">Precio Unitario *</span>
+          <input formControlName="PrecioUnitario" type="number" step="0.01" class="mt-1 block w-full border rounded px-3 py-2" />
+        </label>
+      </div>
+
+      <div class="mt-6 flex justify-end ">
+        <app-button btnId="btn-cancel"
+                    btnText="Cancelar"
+                    btnColor="btn-gray"
+                    (btnClicked)="showModal = false">
+        </app-button>
+
+        <button type="submit">
+          <app-button btnId="btn-save"
+                      btnText="Guardar"
+                      btnColor="btn-green"
+                      (btnClicked)="isModalEdit ? updateProduct() : createProduct()">
+          </app-button>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
