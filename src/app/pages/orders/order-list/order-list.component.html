@@ -1,0 +1,26 @@
+<app-catalog-layout title="Órdenes"
+                    [fields]="['Número de Orden', 'Fecha de Orden', 'NIT del Cliente', 'Nombre del Cliente', 'Placa del Vehículo', 'Estado']"
+                    (onSearch)="search($event)">
+  <div class="bg-white rounded-xl shadow p-6">
+    <div class="flex justify-end items-center mb-4">
+      <app-button
+        btnId="btn-add-order"
+        iconType="plus"
+        btnText="Agregar Orden"
+        btnColor="btn-blue"
+        padding=""
+        margin=""
+        (btnClicked)="goToCreateOrder()"
+      >
+      </app-button>
+    </div>
+    <app-simple-table
+      [headers]="['Número de Orden', 'Fecha de Orden', 'NIT del Cliente', 'Nombre del Cliente', 'Placa del Vehículo', 'Total', 'Estado', 'Acciones']"
+      [rows]="orders"
+      [showEdit]="true"
+      (onDelete)="deleteOrder($event)"
+      (onEdit)="editOrder($event)"
+    >
+    </app-simple-table>
+  </div>
+</app-catalog-layout>

@@ -42,7 +42,7 @@ export class ClienteComponent implements OnInit {
     this.clientForm = this.fb.group({
       Nombre: ['', Validators.required],
       Apellido: [''],
-      Telefono: ['', [ Validators.pattern(/^[0-9]{10}$/)]],
+      Telefono: ['', [ Validators.pattern(/^[0-9]{8}$/)]],
       CorreoElectronico: ['', [ Validators.email]],
       Direccion: ['', Validators.required],
       Nit: ['', []],
