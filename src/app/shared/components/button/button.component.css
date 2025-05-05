@@ -1,0 +1,28 @@
+button {
+  width: 100%;
+  cursor: pointer;
+}
+
+.btn-green :hover {
+  background-color: var(--color-green-700);
+}
+
+.btn-green {
+  background-color: var(--color-green-500);
+}
+
+.btn-blue {
+  background-color: var(--color-blue-500);
+}
+
+.btn-blue:hover {
+  background-color: var(--color-blue-700);
+}
+
+.btn-gray {
+  background-color: var(--color-gray-500);
+}
+
+.btn-gray:hover {
+  background-color: var(--color-gray-700);
+}

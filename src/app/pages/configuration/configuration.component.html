@@ -1,0 +1,93 @@
+<!-- configuracion.component.html -->
+<div class="p-4">
+  <h1 class="text-xl font-bold mb-4">Configuración</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <label class="block">
+      <span class="text-gray-700">Nombre de usuario</span>
+      <input
+        type="text"
+        class="mt-1 block w-full border rounded px-3 py-2"
+        [value]="currentUser?.NombreUsuario"
+        disabled
+      />
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Rol</span>
+      <input
+        type="text"
+        class="mt-1 block w-full border rounded px-3 py-2"
+        [value]="getRole"
+        disabled
+      />
+    </label>
+  </div>
+
+  <div  class="mb-6">
+    <div class="w-fit">
+      <app-button btnId="btn-add-user"
+                  iconType="plus"
+                  btnText="Agregar Usuario"
+                  btnColor="btn-blue"
+                  padding=""
+                  (btnClicked)="showModal = true">
+      </app-button>
+    </div>
+
+    <!-- Tabla reutilizable -->
+    <app-simple-table
+      [headers]="['# ID', 'Usuario', 'Rol', 'Acciones']"
+      [rows]="usuarios"
+      (onDelete)="eliminarUsuario($event)"
+    ></app-simple-table>
+  </div>
+
+  @if (showModal) {
+    <div  class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+        <h2 class="text-xl font-semibold mb-4">Agregar Usuario</h2>
+
+        <form [formGroup]="usuarioForm" (ngSubmit)="createUser()">
+          <div class="space-y-4">
+            <label class="block">
+              <span class="text-gray-700">Nombre de usuario</span>
+              <input formControlName="NombreUsuario" type="text" class="mt-1 block w-full border rounded px-3 py-2" />
+            </label>
+
+            <label class="block">
+              <span class="text-gray-700">Contraseña</span>
+              <input formControlName="Contrasena" type="password" class="mt-1 block w-full border rounded px-3 py-2" />
+            </label>
+
+            <label class="block">
+              <span class="text-gray-700">Rol</span>
+              <select formControlName="Rol" class="mt-1 block w-full border rounded px-3 py-2">
+                <option value="1">Administrador</option>
+                <option value="2">Empleado</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="mt-6 flex justify-end space-x-2">
+            <app-button btnId="btn-add-user"
+                        btnText="Cancelar"
+                        btnColor="btn-gray"
+                        padding=""
+                        margin=""
+                        (btnClicked)="showModal = false">
+            </app-button>
+            <app-button btnId="btn-add-user"
+                        btnText="Guardar"
+                        btnColor="btn-green"
+                        padding=""
+                        margin=""
+                        (btnClicked)="createUser()">
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>
