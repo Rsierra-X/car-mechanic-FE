@@ -5,6 +5,7 @@ import {SimpleTableComponent} from "../../components/simple-table/simple-table.c
 import {NgIf} from "@angular/common";
 import {ToastrService} from "ngx-toastr";
 import {ButtonComponent} from "../../shared/components/button/button.component";
+import {CatalogLayoutComponent} from "../../components/catalog-layout/catalog-layout.component";
 
 @Component({
   selector: 'app-configuration',
@@ -13,7 +14,8 @@ import {ButtonComponent} from "../../shared/components/button/button.component";
     ReactiveFormsModule,
     SimpleTableComponent,
     NgIf,
-    ButtonComponent
+    ButtonComponent,
+    CatalogLayoutComponent
   ],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.css'
@@ -69,10 +71,15 @@ export class ConfigurationComponent {
     }
   }
 
-  eliminarUsuario(id: number) {
-    this.usuarioService.delete(id).subscribe(() => {
+  eliminarUsuario(id: any) {
+    this.usuarioService.delete(id.UsuarioID).subscribe(() => {
       this.toastr.success('El usuario ha sido eliminado', 'Exito');
       this.loadUsuarios()
     });
+  }
+
+  search(filtros: Record<string, string>) {
+    console.log('Filtros aplicados:', filtros);
+    // Aquí puedes hacer una llamada al backend con los filtros, o filtrar localmente
   }
 }

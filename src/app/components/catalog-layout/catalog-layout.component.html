@@ -1,33 +1,26 @@
 <div class="p-6 space-y-6">
-  <h1 class="text-2xl font-semibold">{{ title }}</h1>
+  <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
 
   <!-- Search form -->
   <div class="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-end">
-    <div class="flex flex-col">
-      <label class="text-sm font-medium">Nombre</label>
+    <div class="flex flex-wrap gap-4 items-end mb-4">
+    <div *ngFor="let field of fields" class="flex flex-col">
+      <label class="text-sm text-gray-500 mb-1">{{ field }}</label>
       <input
+        [(ngModel)]="searchValues[field]"
         type="text"
-        class="border rounded px-3 py-2 w-60"
-        [(ngModel)]="search.nombre"
-        placeholder="Nombre"
+        class="border border-gray-300 rounded px-3 py-1 text-md"
       />
     </div>
-    <div class="flex flex-col">
-      <label class="text-sm font-medium">Fecha</label>
-      <input
-        type="date"
-        class="border rounded px-3 py-2"
-        [(ngModel)]="search.fecha"
-      />
-    </div>
+
+    <!-- Botón de búsqueda -->
     <button
-      (click)="onBuscar()"
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-    >
+      (click)="emitSearch()"
+      class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition">
       Buscar
     </button>
   </div>
+  </div>
 
-  <!-- Table slot -->
   <ng-content></ng-content>
 </div>

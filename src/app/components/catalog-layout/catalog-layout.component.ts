@@ -1,21 +1,28 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {NgForOf} from "@angular/common";
 
 @Component({
   selector: 'app-catalog-layout',
-  imports: [
-    FormsModule
-  ],
+  imports: [NgForOf, FormsModule],
   standalone: true,
   templateUrl: './catalog-layout.component.html',
   styleUrl: './catalog-layout.component.css'
 })
-export class CatalogLayoutComponent {
+export class CatalogLayoutComponent implements OnInit {
   @Input() title: string = '';
-  search = { nombre: '', fecha: '' };
+  @Input() fields: string[] = [];
+  @Output() onSearch = new EventEmitter<Record<string, string>>();
 
-  onBuscar() {
-    console.log('Buscar', this.search);
-    // Aquí puedes emitir eventos o manejar la lógica de búsqueda
+  searchValues: Record<string, string> = {};
+
+  ngOnInit() {
+    this.fields.forEach(field => {
+      this.searchValues[field] = '';
+    });
+  }
+
+  emitSearch() {
+    this.onSearch.emit({ ...this.searchValues });
   }
 }

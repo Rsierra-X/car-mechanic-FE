@@ -4,6 +4,7 @@ import {DashboadComponent} from "./components/dashboad/dashboad.component";
 import {OrdersCatalogComponent} from "./pages/orders/orders-catalog/orders-catalog.component";
 import {ConfigurationComponent} from "./pages/configuration/configuration.component";
 import {AuthGuard} from "./guards/auth.guard";
+import {ClienteComponent} from "./pages/cliente/cliente.component";
 
 export const routes: Routes = [
   {
@@ -23,6 +24,11 @@ export const routes: Routes = [
   {
     path: 'configuration',
     component: ConfigurationComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'clientes',
+    component: ClienteComponent,
     canActivate: [AuthGuard],
   },
   {

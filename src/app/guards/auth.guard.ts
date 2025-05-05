@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
     if (isLogged) {
       const targetUrl = state.url;
 
-      const validRoutes = ['/dashboard', '/orders', '/configuration'];
+      const validRoutes = ['/dashboard', '/orders', '/configuration', '/clientes'];
       if (!validRoutes.includes(targetUrl)) {
         return this.router.createUrlTree(['/dashboard']);
       }

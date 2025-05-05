@@ -13,5 +13,15 @@ import {NgForOf} from "@angular/common";
 export class SimpleTableComponent {
   @Input() headers: string[] = [];
   @Input() rows: any[] = [];
-  @Output() onDelete = new EventEmitter<number>();
+  @Input() showEdit: boolean = false;
+  @Output() onDelete: EventEmitter<any[]> = new EventEmitter();
+  @Output() onEdit: EventEmitter<any[]> = new EventEmitter();
+
+  onDeleteClick(row: any): void {
+    this.onDelete.emit(row);
+  }
+
+  onEditClick(row: any): void {
+    this.onEdit.emit(row);
+  }
 }

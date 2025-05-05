@@ -7,11 +7,23 @@
     </thead>
     <tbody>
     <tr *ngFor="let row of rows; let i = index" class="border-t">
-      <td class="px-4 py-2">{{ row.UsuarioID }}</td>
-      <td class="px-4 py-2">{{ row.NombreUsuario }}</td>
-      <td class="px-4 py-2">{{ row.Rol }}</td>
-      <td class="px-4 py-2">
-        <button (click)="onDelete.emit(row.UsuarioID)" class="text-red-500 hover:underline">Eliminar</button>
+      <td *ngFor="let header of headers" class="px-4 py-2">
+        @if (header !== 'Acciones') {
+          {{ row[header] }}
+        } @else {
+          <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center">
+              @if (showEdit) {
+                <button (click)="onEditClick(row)" title="Editar">
+                  Editar
+                </button>
+              }
+              <button (click)="onDeleteClick(row)" title="Eliminar">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        }
       </td>
     </tr>
     </tbody>

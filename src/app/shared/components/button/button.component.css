@@ -3,7 +3,7 @@ button {
   cursor: pointer;
 }
 
-.btn-green :hover {
+.btn-green:hover {
   background-color: var(--color-green-700);
 }
 
