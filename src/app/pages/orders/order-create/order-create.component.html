@@ -1,123 +1,131 @@
-<div class=" mx-auto  p-6 max-h-[100vh] overflow-y-auto">
-  <h2 class="text-3xl font-bold text-gray-800 mb-6">Nueva Orden de Trabajo</h2>
+<div class="container mx-auto p-6 max-w-5xl h-[90vh] overflow-y-auto space-y-6">
 
-  <form [formGroup]="orderForm" (ngSubmit)="saveOrder()" class="space-y-6">
-    <div class="bg-white p-4 rounded-xl shadow grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div *ngIf="showClients">
-        <label for="clientId" class="block text-gray-600 text-sm font-bold mb-1">Cliente:</label>
-        <select id="clientId" formControlName="clientId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" (change)="onClientChange($event)">
-          <option value="" disabled selected>Seleccionar Cliente</option>
-          <option *ngFor="let client of clients" [value]="client.ClienteID">{{ client.Nombre }} - {{ client.Nit }}</option>
+  <!-- Encabezado -->
+  <h2 class="text-2xl font-semibold">Crear Orden de Trabajo</h2>
+
+  <!-- Cliente -->
+  <div class="bg-white rounded-xl shadow p-6">
+    <h3 class="text-lg font-semibold mb-4">Datos del Cliente</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium mb-1">Cliente</label>
+        <select formControlName="clientId" (change)="onClientChange($event)" class="form-select w-full">
+          <option [ngValue]="null">-- Seleccionar Cliente --</option>
+          <option *ngFor="let client of clients" [ngValue]="client.ClienteID">
+            {{ client.Nombre }}
+          </option>
         </select>
-        <div *ngIf="orderForm.get('clientId')?.invalid && orderForm.get('clientId')?.touched" class="text-red-500 text-xs italic">
-          Por favor, selecciona un cliente.
+        <div *ngIf="orderForm.get('clientId')?.touched && orderForm.get('clientId')?.invalid" class="text-red-500 text-sm">
+          Cliente es obligatorio.
         </div>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1">NIT</label>
+        <input type="text" formControlName="clientNit" class="form-input w-full"  />
+      </div>
+    </div>
+  </div>
+
+  <!-- Vehículo -->
+  <div class="bg-white rounded-xl shadow p-6">
+    <h3 class="text-lg font-semibold mb-4">Datos del Vehículo</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium mb-1">Marca</label>
+        <input type="text" formControlName="brand" class="form-input w-full" />
       </div>
       <div>
-        <label for="clientNit" class="block text-gray-600 text-sm font-bold mb-1">NIT:</label>
-        <input type="text" id="clientNit" formControlName="clientNit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" readonly>
+        <label class="block font-medium mb-1">Tipo</label>
+        <input type="text" formControlName="type" class="form-input w-full" />
       </div>
       <div>
-        <label for="orderDate" class="block text-gray-600 text-sm font-bold mb-1">Fecha:</label>
-        <input type="date" id="orderDate" formControlName="orderDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <label class="block font-medium mb-1">Color</label>
+        <input type="text" formControlName="color" class="form-input w-full" />
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Año</label>
+        <input type="text" formControlName="year" class="form-input w-full" />
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Placa</label>
+        <input type="text" formControlName="plate" class="form-input w-full" />
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Próximo Servicio</label>
+        <input type="text" formControlName="nextService" class="form-input w-full" />
       </div>
     </div>
+  </div>
 
-    <div class="bg-white rounded-md shadow-sm p-4">
-      <h3 class="text-lg font-semibold text-gray-600 mb-4">Información del Vehículo</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label for="brand" class="block text-gray-600 text-sm font-bold mb-1">Marca:</label>
-          <input type="text" id="brand" formControlName="brand" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-        <div>
-          <label for="type" class="block text-gray-600 text-sm font-bold mb-1">Tipo:</label>
-          <input type="text" id="type" formControlName="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-        <div>
-          <label for="plate" class="block text-gray-600 text-sm font-bold mb-1">Placa:</label>
-          <input type="text" id="plate" formControlName="plate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-        <div>
-          <label for="color" class="block text-gray-600 text-sm font-bold mb-1">Color:</label>
-          <input type="text" id="color" formControlName="color" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-        <div>
-          <label for="year" class="block text-gray-600 text-sm font-bold mb-1">Año:</label>
-          <input type="text" id="year" formControlName="year" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-        <div>
-          <label for="nextService" class="block text-gray-600 text-sm font-bold mb-1">Próximo Servicio al Motor:</label>
-          <input type="text" id="nextService" formControlName="nextService" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-      </div>
-    </div>
+  <!-- Detalle -->
+  <div class="bg-white rounded-xl shadow p-6">
+    <h3 class="text-lg font-semibold mb-4">Productos / Servicios</h3>
 
-    <div class="bg-white rounded-md shadow-sm p-4 mb-4 overflow-x-auto">
-      <h3 class="text-lg font-semibold text-gray-600 mb-4">Detalle de la Orden</h3>
-      <table class="w-full min-w-[800px]">
-        <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="py-2 px-4 text-left">Descripción</th>
-          <th class="py-2 px-4 text-right">Cantidad</th>
-          <th class="py-2 px-4 text-right">Precio Unitario</th>
-          <th class="py-2 px-4 text-right">Total</th>
-          <th class="py-2 px-4"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let detail of orderDetails.controls; let i = index">
-          <td *ngIf="showProducts" class="py-2 px-4">
-            <select  formControlName="productId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" (change)="onProductOrServiceChange(i)">
-              <option value="" disabled selected>Seleccionar Producto/Servicio</option>
-              <option *ngFor="let item of productsAndServices" [value]="item.ProductoID">{{ item.Nombre }}</option>
-            </select>
-          </td>
-          <td class="py-2 px-4">
-            <input type="number" formControlName="quantity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          </td>
-          <td class="py-2 px-4 text-right">
-            <input type="number" formControlName="unitPrice" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" readonly>
-          </td>
-          <td class="py-2 px-4 text-right">{{ detail.get('quantity')?.value * detail.get('unitPrice')?.value | number:'1.2-2' }}</td>
-          <td class="py-2 px-4">
-            <button type="button" (click)="removeDetail(i)" class="text-red-500 hover:text-red-700">Eliminar</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <button type="button" (click)="addDetail()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">Agregar Servicio/Repuesto</button>
-    </div>
+    <div formArrayName="orderDetails" class="space-y-4">
+      <div *ngFor="let detail of orderDetails.controls; let i = index" [formGroupName]="i"
+           class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center border p-4 rounded-lg">
 
-    <div class="bg-white rounded-md shadow-sm p-4 mb-4">
-      <h3 class="text-lg font-semibold text-gray-600 mb-4">Resumen</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-gray-600 text-sm font-bold mb-1">Total Repuestos:</label>
-          <input type="text" [value]="calculateTotalRepuestos() | number:'1.2-2'" readonly class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <label class="block font-medium mb-1">Producto / Servicio</label>
+          <select formControlName="productId" (change)="onProductOrServiceChange(i)" class="form-select w-full">
+            <option [ngValue]="null">-- Seleccionar --</option>
+            <option *ngFor="let item of productsAndServices" [ngValue]="item.id">{{ item.name }}</option>
+          </select>
         </div>
+
         <div>
-          <label for="laborCost" class="block text-gray-600 text-sm font-bold mb-1">Mano de Obra:</label>
-          <input type="number" id="laborCost" formControlName="laborCost" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <label class="block font-medium mb-1">Descripción</label>
+          <input formControlName="description" class="form-input w-full"  />
         </div>
+
         <div>
-          <label class="block text-gray-600 text-sm font-bold mb-1">Subtotal:</label>
-          <input type="text" [value]="calculateSubtotal() | number:'1.2-2'" readonly class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <label class="block font-medium mb-1">Cantidad</label>
+          <input type="number" formControlName="quantity" class="form-input w-full" min="1" />
         </div>
+
         <div>
-          <label for="abono" class="block text-gray-600 text-sm font-bold mb-1">Abono (Opcional):</label>
-          <input type="number" id="abono" formControlName="abono" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <label class="block font-medium mb-1">Precio Unitario</label>
+          <input type="number" formControlName="unitPrice" class="form-input w-full"  />
         </div>
-        <div>
-          <label class="block text-gray-600 text-sm font-bold mb-1">Total:</label>
-          <input type="text" [value]="calculateTotal() | number:'1.2-2'" readonly class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline font-semibold">
+
+        <div class="col-span-1 md:col-span-4 text-right">
+          <button type="button" (click)="removeDetail(i)" class="text-red-600 hover:underline">Eliminar</button>
         </div>
       </div>
     </div>
 
-    <div class="flex justify-end">
-      <button type="button" routerLink="/orders" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancelar</button>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Guardar Orden</button>
+    <div class="mt-4">
+      <button type="button" (click)="addDetail()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Agregar Producto / Servicio
+      </button>
     </div>
-  </form>
+  </div>
+
+  <!-- Totales -->
+  <div class="bg-white rounded-xl shadow p-6">
+    <h3 class="text-lg font-semibold mb-4">Totales</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium mb-1">Mano de Obra</label>
+        <input type="number" formControlName="laborCost" class="form-input w-full" />
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1">Abono</label>
+        <input type="number" formControlName="abono" class="form-input w-full" />
+      </div>
+    </div>
+
+    <div class="mt-4 border-t pt-4">
+      <p><strong>Subtotal:</strong> Q{{ calculateSubtotal() | number:'1.2-2' }}</p>
+      <p><strong>Total:</strong> Q{{ calculateTotal() | number:'1.2-2' }}</p>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="flex justify-end gap-4">
+    <button type="button" class="bg-gray-300 px-4 py-2 rounded" routerLink="/orders">Cancelar</button>
+    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Guardar Orden</button>
+  </div>
 </div>
