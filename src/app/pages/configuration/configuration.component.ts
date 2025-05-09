@@ -26,6 +26,7 @@ export class ConfigurationComponent {
 
   usuarios: any[] = [];
   currentUser: any | null = null;
+  dataTransformed: any[] = [];
 
   constructor(private fb: FormBuilder, private usuarioService: UserService,private toastr: ToastrService,) {
     this.usuarioForm = this.fb.group({
@@ -36,6 +37,13 @@ export class ConfigurationComponent {
 
     this.loadUsuarios();
     this.loadCurrentUser();
+  }
+
+  get getDataTransformed() {
+    return {
+      Usuario: this.currentUser?.NombreUsuario,
+      Rol: this.getRole
+    }
   }
 
   get getRole() {

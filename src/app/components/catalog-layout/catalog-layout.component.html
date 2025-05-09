@@ -7,6 +7,7 @@
     <div *ngFor="let field of fields" class="flex flex-col">
       <label class="block text-gray-600 text-sm font-bold mb-1">{{ field }}</label>
       <input
+        [disabled]="justRead"
         [(ngModel)]="searchValues[field]"
         type="text"
         class="border border-gray-300 rounded px-3 py-1 text-md"
@@ -14,11 +15,13 @@
     </div>
 
     <!-- Botón de búsqueda -->
-    <button
-      (click)="emitSearch()"
-      class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition">
-      Buscar
-    </button>
+      @if (!justRead) {
+        <button
+          (click)="emitSearch()"
+          class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition">
+          Buscar
+        </button>
+      }
   </div>
   </div>
 

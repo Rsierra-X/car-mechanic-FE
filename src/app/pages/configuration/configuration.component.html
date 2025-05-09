@@ -1,4 +1,6 @@
 <app-catalog-layout title="Configuración"
+                    [justRead]="true"
+                    [readData]="getDataTransformed"
                     [fields]="['Usuario', 'Rol']"
                     (onSearch)="search($event)">
   @if (currentUser?.Rol === '1') {

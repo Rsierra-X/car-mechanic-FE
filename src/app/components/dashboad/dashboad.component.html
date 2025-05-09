@@ -1,0 +1,35 @@
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Dashboard Taller Mecánico</h1>
+  <div class="cards-container">
+    <div class="dashboard-card">
+      <h2 class="card-title">Ingresos Mensuales</h2>
+      <p class="card-value">{{ ingresosMensuales | currency:'GTQ' }}</p>
+      <p class="card-description">Ingresos totales de este mes</p>
+    </div>
+    <div class="dashboard-card">
+      <h2 class="card-title">Órdenes de Trabajo</h2>
+      <p class="card-value">{{ totalOrdenes }}</p>
+      <p class="card-description">Número total de órdenes de trabajo</p>
+    </div>
+    <div class="dashboard-card">
+      <h2 class="card-title">Clientes Registrados</h2>
+      <p class="card-value">{{ totalClientes }}</p>
+      <p class="card-description">Número total de clientes</p>
+    </div>
+    <div class="dashboard-card">
+      <h2 class="card-title">Productos en Inventario</h2>
+      <p class="card-value">{{ totalInventario }}</p>
+      <p class="card-description">Número total de productos en inventario</p>
+    </div>
+  </div>
+  <div class="charts-container">
+    <div class="chart-container">
+      <h2 class="chart-title">Ingresos por Mes</h2>
+      <canvas id="monthly-revenue-chart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h2 class="chart-title">Productos Más Vendidos</h2>
+      <canvas id="top-products-chart"></canvas>
+    </div>
+  </div>
+</div>

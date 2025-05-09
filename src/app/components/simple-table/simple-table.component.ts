@@ -5,7 +5,7 @@ import {NgForOf} from "@angular/common";
   selector: 'app-simple-table',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
   ],
   templateUrl: './simple-table.component.html',
   styleUrl: './simple-table.component.css'
@@ -16,6 +16,8 @@ export class SimpleTableComponent {
   @Input() showEdit: boolean = false;
   @Output() onDelete: EventEmitter<any[]> = new EventEmitter();
   @Output() onEdit: EventEmitter<any[]> = new EventEmitter();
+
+
 
   onDeleteClick(row: any): void {
     this.onDelete.emit(row);

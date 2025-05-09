@@ -7,6 +7,9 @@ import {ClienteComponent} from "./pages/cliente/cliente.component";
 import {InventarioComponent} from "./pages/inventario/inventario.component";
 import {OrderListComponent} from "./pages/orders/order-list/order-list.component";
 import {OrderCreateComponent} from "./pages/orders/order-create/order-create.component";
+import {TipoProductoComponent} from "./pages/inventario/tipo-producto/tipo-producto.component";
+import {MarcasComponent} from "./pages/inventario/marcas/marcas.component";
+import {ServicesProductComponent} from "./pages/services/services-product.component";
 
 export const routes: Routes = [
   {
@@ -16,6 +19,11 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboadComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'servicios',
+    component: ServicesProductComponent,
     canActivate: [AuthGuard],
   },
   {
@@ -41,6 +49,16 @@ export const routes: Routes = [
   {
     path: 'inventario',
     component: InventarioComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'tipo-producto',
+    component: TipoProductoComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'marca-producto',
+    component: MarcasComponent,
     canActivate: [AuthGuard],
   },
   {

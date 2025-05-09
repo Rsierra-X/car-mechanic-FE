@@ -12,6 +12,12 @@ import {NgForOf} from "@angular/common";
 export class CatalogLayoutComponent implements OnInit {
   @Input() title: string = '';
   @Input() fields: string[] = [];
+  @Input() justRead = false;
+  @Input() set readData(data: Record<string, string>) {
+    this.fields.forEach(field => {
+      this.searchValues[field] = data[field] || '';
+    });
+  }
   @Output() onSearch = new EventEmitter<Record<string, string>>();
 
   searchValues: Record<string, string> = {};
