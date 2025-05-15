@@ -30,7 +30,8 @@ export class OrderCreateComponent implements OnInit {
   orderForm: FormGroup;
   clients: any[] = [];
   productsAndServices: any[] = [];
-
+marcas = ['Toyota', 'Nissan', 'Ford', 'Hyundai', 'Chevrolet'];
+tipos = ['Sedán', 'SUV', 'Pick-Up', 'Camión', 'Motocicleta'];
   showClients = false;
   showProducts = false;
 

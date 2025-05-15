@@ -1,15 +1,17 @@
-<div class="container mx-auto p-6 max-w-5xl h-[90vh] overflow-y-auto space-y-6">
+<form [formGroup]="orderForm">
+<div class="container mx-auto p-6 w-full h-[100vh] overflow-y-auto space-y-6">
 
   <!-- Encabezado -->
   <h2 class="text-2xl font-semibold">Crear Orden de Trabajo</h2>
 
   <!-- Cliente -->
+
   <div class="bg-white rounded-xl shadow p-6">
     <h3 class="text-lg font-semibold mb-4">Datos del Cliente</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block font-medium mb-1">Cliente</label>
-        <select formControlName="clientId" (change)="onClientChange($event)" class="form-select w-full">
+        <select formControlName="clientId" (change)="onClientChange($event)" class="border border-gray-300 rounded px-3 py-1 text-md w-full">
           <option [ngValue]="null">-- Seleccionar Cliente --</option>
           <option *ngFor="let client of clients" [ngValue]="client.ClienteID">
             {{ client.Nombre }}
@@ -22,7 +24,7 @@
 
       <div>
         <label class="block font-medium mb-1">NIT</label>
-        <input type="text" formControlName="clientNit" class="form-input w-full"  />
+        <input type="text" formControlName="clientNit" class="border border-gray-300 rounded px-3 py-1 text-md w-full" [disabled]="true" />
       </div>
     </div>
   </div>
@@ -32,28 +34,35 @@
     <h3 class="text-lg font-semibold mb-4">Datos del Vehículo</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block font-medium mb-1">Marca</label>
-        <input type="text" formControlName="brand" class="form-input w-full" />
-      </div>
-      <div>
-        <label class="block font-medium mb-1">Tipo</label>
-        <input type="text" formControlName="type" class="form-input w-full" />
-      </div>
+  <label class="block font-medium mb-1">Marca</label>
+  <select formControlName="brand" class="border border-gray-300 rounded px-3 py-1 text-md w-full">
+    <option [ngValue]="null">-- Seleccionar Marca --</option>
+    <option *ngFor="let marca of marcas" [value]="marca">{{ marca }}</option>
+  </select>
+</div>
+
+<div>
+  <label class="block font-medium mb-1">Tipo</label>
+  <select formControlName="type" class="border border-gray-300 rounded px-3 py-1 text-md w-full">
+    <option [ngValue]="null">-- Seleccionar Tipo --</option>
+    <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+  </select>
+</div>
       <div>
         <label class="block font-medium mb-1">Color</label>
-        <input type="text" formControlName="color" class="form-input w-full" />
+        <input type="text" formControlName="color" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
       <div>
         <label class="block font-medium mb-1">Año</label>
-        <input type="text" formControlName="year" class="form-input w-full" />
+        <input type="text" formControlName="year" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
       <div>
         <label class="block font-medium mb-1">Placa</label>
-        <input type="text" formControlName="plate" class="form-input w-full" />
+        <input type="text" formControlName="plate" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
       <div>
         <label class="block font-medium mb-1">Próximo Servicio</label>
-        <input type="text" formControlName="nextService" class="form-input w-full" />
+        <input type="text" formControlName="nextService" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
     </div>
   </div>
@@ -68,7 +77,7 @@
 
         <div>
           <label class="block font-medium mb-1">Producto / Servicio</label>
-          <select formControlName="productId" (change)="onProductOrServiceChange(i)" class="form-select w-full">
+          <select formControlName="productId" (change)="onProductOrServiceChange(i)" class="border border-gray-300 rounded px-3 py-1 text-md w-full">
             <option [ngValue]="null">-- Seleccionar --</option>
             <option *ngFor="let item of productsAndServices" [ngValue]="item.id">{{ item.name }}</option>
           </select>
@@ -76,17 +85,17 @@
 
         <div>
           <label class="block font-medium mb-1">Descripción</label>
-          <input formControlName="description" class="form-input w-full"  />
+          <input formControlName="description" class="border border-gray-300 rounded px-3 py-1 text-md w-full"  />
         </div>
 
         <div>
           <label class="block font-medium mb-1">Cantidad</label>
-          <input type="number" formControlName="quantity" class="form-input w-full" min="1" />
+          <input type="number" formControlName="quantity" class="border border-gray-300 rounded px-3 py-1 text-md w-full" min="1" />
         </div>
 
         <div>
           <label class="block font-medium mb-1">Precio Unitario</label>
-          <input type="number" formControlName="unitPrice" class="form-input w-full"  />
+          <input type="number" formControlName="unitPrice" class="border border-gray-300 rounded px-3 py-1 text-md w-full"  />
         </div>
 
         <div class="col-span-1 md:col-span-4 text-right">
@@ -108,12 +117,12 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block font-medium mb-1">Mano de Obra</label>
-        <input type="number" formControlName="laborCost" class="form-input w-full" />
+        <input type="number" formControlName="laborCost" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
 
       <div>
         <label class="block font-medium mb-1">Abono</label>
-        <input type="number" formControlName="abono" class="form-input w-full" />
+        <input type="number" formControlName="abono" class="border border-gray-300 rounded px-3 py-1 text-md w-full" />
       </div>
     </div>
 
@@ -128,4 +137,5 @@
     <button type="button" class="bg-gray-300 px-4 py-2 rounded" routerLink="/orders">Cancelar</button>
     <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Guardar Orden</button>
   </div>
-</div>
+</div>  
+</form>
