@@ -19,9 +19,11 @@
       [rows]="OrderTableRow"
       [showEdit]="true"
       [showUpdateStatus]="true"
+      [showDownload]="true"
       (onDelete)="deleteOrder($event)"
       (onEdit)="editOrder($event)"
       (onUpdateStatus)="updateOrderStatus($event)"
+      (onDownload)="downloadOrder($event)"
     >
     </app-simple-table>
   </div>

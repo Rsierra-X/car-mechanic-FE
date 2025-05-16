@@ -2,7 +2,21 @@
 
   <!-- Órdenes del Mes -->
   <section>
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Órdenes de Trabajo del Mes Actual</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">📋 Órdenes de Trabajo del Mes Actual</h2>
+
+      <app-button
+        btnId="btn-export"
+        iconType="xml"
+        btnText="Ordenes entregadas del día"
+        margin=""
+        padding=""
+        btnColor="btn-blue"
+        (click)="exportarOrdenesEntregadas()"
+      >
+      </app-button>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-white shadow-lg rounded-2xl p-6 flex items-center gap-4 border-l-4 border-yellow-500">
         <i class="fas fa-hourglass-half text-yellow-500 text-3xl"></i>

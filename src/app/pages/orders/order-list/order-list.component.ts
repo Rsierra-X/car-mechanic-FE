@@ -7,6 +7,12 @@ import {ClienteService} from "../../../services/clientes-service/cliente.service
 import {ToastrService} from "ngx-toastr";
 import {OrdersService} from "../../../services/orders/orders.service";
 import {Router} from "@angular/router";
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import { vfs } from 'pdfmake/build/vfs_fonts';
+
+
+
+
 
 export interface Order {
   id?: number;
@@ -58,6 +64,7 @@ export class OrderListComponent implements OnInit {
     private toastr: ToastrService,
     private router: Router  // Inject the router
   ) {
+
     this.orderForm = this.fb.group({
       orderDate: [new Date(), Validators.required],
       clientId: [null, Validators.required],  // You might need a client selection dropdown
@@ -272,5 +279,113 @@ export class OrderListComponent implements OnInit {
         this.toastr.error('Failed to create order', 'Error');
       }
     );
+  }
+
+  downloadOrder(order: any) {
+    this.generateOrderPDF(order.orderId, this.orders);
+  }
+
+  generateOrderPDF(orderId: number, orders: any[]) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const cliente = order.cliente;
+    const vehiculo = order.vehiculo;
+
+    const repuestos = order.detalles
+      .filter((d: any) => d.tipo === 'producto')
+      .map((item: any) => [
+        { text: item.cantidad.toString(), alignment: 'center' },
+        { text: 'Descripción del producto', alignment: 'left' },
+        { text: `Q${item.precioUnitario}`, alignment: 'right' }
+      ]);
+
+    const servicios = order.detalles
+      .filter((d: any) => d.tipo === 'servicio')
+      .map((item: any) => [
+        { text: item.cantidad.toString(), alignment: 'center' },
+        { text: 'Descripción del servicio', alignment: 'left' },
+        { text: `Q${item.precioUnitario}`, alignment: 'right' }
+      ]);
+
+    const docDefinition: any = {
+      content: [
+        {
+          text: 'Automotriz "Los Dos"',
+          style: 'header',
+          alignment: 'center',
+          margin: [0, 0, 0, 10]
+        },
+        {
+          text: [
+            { text: 'Dirección: ', bold: true },
+            '19 avenida 42-25 zona 8 Guatemala, Guatemala\n',
+            { text: 'Email: ', bold: true },
+            'automotrizlosdos@gmail.com\n',
+            { text: 'Tel: ', bold: true },
+            '52520028\n',
+            { text: 'Fecha: ', bold: true },
+            `${order.fecha}\n`
+          ],
+          style: 'info',
+          margin: [0, 0, 0, 10]
+        },
+        {
+          columns: [
+            { text: `NOMBRE:\n${cliente.Nombre} ${cliente.Apellido}`, width: '50%' },
+            {
+              text: `VEHÍCULO:\nMarca: ${vehiculo.Marca}\nModelo: ${vehiculo.Modelo}\nAño: ${vehiculo.Anio}\nColor: ${vehiculo.Color}\nPlaca: ${vehiculo.Placa}`,
+              width: '50%'
+            }
+          ],
+          margin: [0, 0, 0, 10]
+        },
+        { text: 'ORDEN DE TRABAJO', style: 'subheader' },
+        { text: 'REPUESTOS', bold: true, margin: [0, 5, 0, 5] },
+        {
+          table: {
+            widths: ['10%', '*', '20%'],
+            body: [
+              [{ text: 'CANT', bold: true }, { text: 'DESCRIPCIÓN', bold: true }, { text: 'TOTAL', bold: true }],
+              ...repuestos
+            ]
+          },
+          layout: 'lightHorizontalLines'
+        },
+        {
+          text: `Total Repuestos: Q${repuestos.reduce((sum:any, i:any) => sum + parseFloat(i[2].text.replace('Q', '')), 0).toFixed(2)}`,
+          alignment: 'right',
+          margin: [0, 5, 0, 10]
+        },
+        { text: 'MANO DE OBRA', bold: true },
+        {
+          text: `Descripción: Desmontar y montar piezas según orden\nTotal Mano de obra: Q${parseFloat(order.manoDeObra).toFixed(2)}`,
+          margin: [0, 5, 0, 10]
+        },
+        {
+          text: `SUBTOTAL: Q${(
+            parseFloat(order.total) + parseFloat(order.abono)
+          ).toFixed(2)}\nABONO: Q${parseFloat(order.abono).toFixed(2)}\nTOTAL: Q${parseFloat(order.total).toFixed(2)}`,
+          alignment: 'right',
+          margin: [0, 10, 0, 0]
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true
+        },
+        subheader: {
+          fontSize: 15,
+          bold: true,
+          margin: [0, 10, 0, 5]
+        },
+        info: {
+          fontSize: 10
+        }
+      }
+    };
+
+    pdfMake.createPdf(docDefinition).open();
   }
 }

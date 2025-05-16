@@ -6,6 +6,10 @@ import { CurrencyPipe, DatePipe, NgClass, NgIf, DecimalPipe } from "@angular/com
 import { OrdersService } from "../../services/orders/orders.service"; // Importa la interfaz Order
 import { Chart, registerables } from 'chart.js';
 import { ClienteService } from "../../services/clientes-service/cliente.service"; // Asumo que lo mantienes
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import {ButtonComponent} from "../../shared/components/button/button.component";
+
 Chart.register(...registerables);
 
 interface MarcaVehiculoData {
@@ -21,7 +25,9 @@ interface MarcaVehiculoData {
     DatePipe,
     NgClass,
     NgIf,
-    DecimalPipe // Añadido para porcentajes
+    DecimalPipe,
+    ButtonComponent,
+    // Añadido para porcentajes
   ],
   templateUrl: './dashboad.component.html',
   standalone: true,
@@ -36,6 +42,8 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
   // Ingresos
   ingresoMesActual: number = 0;
   ingresoMesAnterior: number = 0;
+
+  ordenes: any[] = [];
 
   // Gráficos
   private monthlyRevenueChart: Chart | undefined; // El que ya tenías para ingresos históricos
@@ -68,6 +76,28 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subs.forEach(sub => sub.unsubscribe());
     this.destroyCharts();
+  }
+
+  exportarOrdenesEntregadas(): void {
+    const ordenesEntregadas = this.ordenes.filter(o => o.estado === 'Entregada');
+
+    const dataExcel = ordenesEntregadas.map(o => ({
+      'ID Orden': o.id,
+      'Fecha': o.fecha,
+      'Nombre Cliente': `${o.cliente.Nombre} ${o.cliente.Apellido}`,
+      'Dirección': o.cliente.Direccion,
+      'NIT': o.cliente.Nit,
+      'Monto': o.cliente.total,
+      'Correo Electrónico': o.cliente.CorreoElectronico,
+      'Teléfono': o.cliente.Telefono
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataExcel);
+    const workbook = { Sheets: { 'Ordenes Entregadas': worksheet }, SheetNames: ['Ordenes Entregadas'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, `ordenes_entregadas_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   private destroyCharts(): void {
@@ -248,7 +278,7 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.subs.push(
       this.orderService.getOrders().subscribe((ordenes: any[]) => {
-          console.log(ordenes)
+          this.ordenes = ordenes;
           this.totalOrdenesGeneral = ordenes.length; // Total general de órdenes
 
           // Reseteamos contadores para cada carga
