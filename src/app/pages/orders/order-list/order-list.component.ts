@@ -21,6 +21,17 @@ export interface Order {
   estado: string;
 }
 
+interface OrderTableRow {
+  id?: number;
+  Orden: number;
+  Fecha: string;
+  NIT: string;
+  Cliente: string;
+  Placa: string;
+  Total: string;
+  Estado: string;
+}
+
 @Component({
   selector: 'app-order-list',
   standalone: true,
@@ -38,6 +49,7 @@ export class OrderListComponent implements OnInit {
   isModalEdit = false;
   orderIdSelected = '';
   orders: Order[] = []; // Use the Order interface
+  OrderTableRow: OrderTableRow[] = []; // Use the Order interface
   //searchTerm: string = ''; // You can add this if you want to implement search in the component
 
   constructor(
@@ -67,12 +79,38 @@ export class OrderListComponent implements OnInit {
     this.orderService.getOrders().subscribe(
       (data) => {
         this.orders = data;
+        this.OrderTableRow = this.transformarDatosParaTabla(data);
       },
       (error) => {
         console.error('Error loading orders:', error);
         this.toastr.error('Failed to load orders.', 'Error'); // Use toastr
       }
     );
+  }
+
+  transformarDatosParaTabla(data: any[]): OrderTableRow[] {
+    if (!data) {
+      return []; // Retorna un array vacío si no hay datos
+    }
+
+    return data.map(item => {
+      // Manejo defensivo para cliente y vehiculo por si alguno fuera null o undefined
+      const nombreCliente = item.cliente?.Nombre || '';
+      const apellidoCliente = item.cliente?.Apellido || '';
+      const nitCliente = item.cliente?.Nit || 'N/A'; // O un valor por defecto si prefieres
+      const placaVehiculo = item.vehiculo?.Placa || 'N/A'; // O un valor por defecto
+
+      return {
+        orderId: item.id,
+        Orden: item.id,
+        Fecha: item.fecha,
+        NIT: nitCliente,
+        Cliente: `${nombreCliente} ${apellidoCliente}`.trim(), // Une nombre y apellido
+        Placa: placaVehiculo,
+        Total: item.total, // El total ya viene como string "400.00"
+        Estado: item.estado
+      };
+    });
   }
 
   // search(filters: Record<string, string>) {
@@ -147,6 +185,20 @@ export class OrderListComponent implements OnInit {
     this.orderIdSelected = order.id?.toString() || ''; // Make sure order.id is not undefined
     this.showModal = true;
     this.isModalEdit = true;
+  }
+
+  updateOrderStatus(order: any) {
+    console.log(order)
+    this.orderService.updateOrderStatus(order.orderId, order.estado).subscribe(
+      () => {
+        this.toastr.success(`El estado de la orden ${order.orderId} fue actualizado`, 'Éxito');
+        this.loadOrders();
+      },
+      (error) => {
+        console.error('Error al actualizar el estado de la orden:', error);
+        this.toastr.error('Hubo un error al actualizar el estado de la orden.', 'Error');
+      }
+    );
   }
 
   updateOrder() {

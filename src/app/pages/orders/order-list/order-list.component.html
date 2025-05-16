@@ -15,11 +15,13 @@
       </app-button>
     </div>
     <app-simple-table
-      [headers]="['Número de Orden', 'Fecha de Orden', 'NIT del Cliente', 'Nombre del Cliente', 'Placa del Vehículo', 'Total', 'Estado', 'Acciones']"
-      [rows]="orders"
+      [headers]="['Orden', 'Fecha', 'NIT', 'Cliente', 'Placa', 'Total', 'Estado', 'Acciones']"
+      [rows]="OrderTableRow"
       [showEdit]="true"
+      [showUpdateStatus]="true"
       (onDelete)="deleteOrder($event)"
       (onEdit)="editOrder($event)"
+      (onUpdateStatus)="updateOrderStatus($event)"
     >
     </app-simple-table>
   </div>

@@ -70,8 +70,6 @@
             <span *ngIf="ingresoMesAnterior > 0">
               {{ ((ingresoMesActual - ingresoMesAnterior) / ingresoMesAnterior) * 100 | number:'1.1-1' }}%
             </span>
-            <span *ngIf="ingresoMesAnterior === 0 && ingresoMesActual > 0">(Nuevo)</span>
-            <span *ngIf="ingresoMesAnterior === 0 && ingresoMesActual === 0">(Sin cambios)</span>
           </p>
         </div>
       </div>

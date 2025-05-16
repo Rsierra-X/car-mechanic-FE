@@ -116,7 +116,7 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
             beginAtZero: true,
             grid: { color: 'rgba(200, 200, 200, 0.2)' },
             ticks: {
-              color: '#ccc',
+              color: '#0b0a0a',
               callback: function(value) { // Formatear como moneda
                 if (typeof value === 'number') {
                   return 'Q' + value.toLocaleString('es-GT');
@@ -127,13 +127,13 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
           },
           x: {
             grid: { display: false },
-            ticks: { color: '#ccc' }
+            ticks: { color: '#0b0a0a' }
           }
         },
         plugins: {
           legend: {
             position: 'top',
-            labels: { color: '#eee', usePointStyle: true }
+            labels: { color: '#0b0a0a', usePointStyle: true }
           },
           tooltip: {
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -195,7 +195,7 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
           legend: {
             position: 'right', // Mejor para pie charts con varias categorías
             labels: {
-              color: '#eee',
+              color: '#0b0a0a',
               usePointStyle: true,
               boxWidth: 15, // Ancho del recuadro de color
               padding: 15 // Espaciado entre elementos de la leyenda
@@ -218,11 +218,11 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           },
           title: { // Título DENTRO del gráfico
-            display: true,
+            display: false,
             text: titleText,
             position: 'top',
             align: 'center',
-            color: '#ddd',
+            color: '#0b0a0a',
             font: { size: 16, weight: 'normal' },
             padding: { top: 5, bottom: 15 }
           }
@@ -248,6 +248,7 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.subs.push(
       this.orderService.getOrders().subscribe((ordenes: any[]) => {
+          console.log(ordenes)
           this.totalOrdenesGeneral = ordenes.length; // Total general de órdenes
 
           // Reseteamos contadores para cada carga
@@ -261,36 +262,31 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
           const ingresosPorMesHistorico: { [key: string]: number } = {}; // Para el gráfico de línea
 
           ordenes.forEach(orden => {
-            const fechaCreacionOrden = new Date(orden.fechaCreacion);
+            const fechaCreacionOrden = new Date(orden.fecha);
 
-            // 1. Órdenes de trabajo del mes (Pendiente, Entregado, En Proceso)
-            if (fechaCreacionOrden >= primerDiaMesActual && fechaCreacionOrden <= ultimoDiaMesActual) {
-              if (orden.estado === 'Pendiente') this.ordenesPendientesMes++;
-              if (orden.estado === 'En Proceso') this.ordenesEnProcesoMes++;
-              if (orden.estado === 'Entregado') {
-                this.ordenesEntregadasMes++;
-                // 2. Ingreso del Mes (solo órdenes entregadas)
-                this.ingresoMesActual += orden.total;
-              }
-            }
+            if (orden.estado === 'Pendiente') this.ordenesPendientesMes++;
+            if (orden.estado === 'En Proceso') this.ordenesEnProcesoMes++;
 
-            // 3. Ingreso Mes anterior (solo órdenes entregadas)
-            // Se usa fechaEntregado para ingresos, ya que es cuando el dinero efectivamente ingresa.
-            if (orden.estado === 'Entregado' && orden.fechaEntregado) {
-              const fechaEntrega = new Date(orden.fechaEntregado);
+            if (orden.estado === 'Entregada') {
+              this.ordenesEntregadasMes++;
+
+              // 2. Ingreso del Mes (solo órdenes entregadas)
+              this.ingresoMesActual += Number(orden.total);
+
+              // 3. Ingreso Mes anterior
+              const fechaEntrega = new Date(orden.fecha);
               if (fechaEntrega >= primerDiaMesAnterior && fechaEntrega <= ultimoDiaMesAnterior) {
-                this.ingresoMesAnterior += orden.total;
+                this.ingresoMesAnterior += Number(orden.total);
               }
 
-              // Para gráfico de ingresos históricos (usando fecha de entrega)
+              // 4. Para gráfico de ingresos históricos
               const anioMesEntrega = `${fechaEntrega.getFullYear()}-${String(fechaEntrega.getMonth()).padStart(2, '0')}`; // YYYY-MM
-              ingresosPorMesHistorico[anioMesEntrega] = (ingresosPorMesHistorico[anioMesEntrega] || 0) + orden.total;
+              ingresosPorMesHistorico[anioMesEntrega] = (ingresosPorMesHistorico[anioMesEntrega] || 0) + Number(orden.total);
             }
 
-
-            // 4. Gráfica de PIE de marcas de autos más recurrentes (general)
-            if (orden.vehiculoMarca) {
-              conteoMarcas[orden.vehiculoMarca] = (conteoMarcas[orden.vehiculoMarca] || 0) + 1;
+            // 5. PIE de marcas más frecuentes
+            if (orden.vehiculo) {
+              conteoMarcas[orden.vehiculo.Marca] = (conteoMarcas[orden.vehiculo.Marca] || 0) + 1;
             }
           });
 

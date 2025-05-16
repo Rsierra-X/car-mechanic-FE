@@ -17,11 +17,16 @@ export interface Producto {
 })
 export class InventarioService {
   private baseUrl = `${environment.apiUrl}/inventario`;
+  private baseUrlVehicles = `${environment.apiUrl}/vehiculos-lista`;
 
   constructor(private http: HttpClient) {}
 
   getAll(nombre?: string): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.baseUrl);
+  }
+
+  getAllVehicles(): Observable<any> {
+    return this.http.get<any>(this.baseUrlVehicles);
   }
 
   getById(id: number): Observable<Producto> {

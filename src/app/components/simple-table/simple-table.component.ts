@@ -14,8 +14,10 @@ export class SimpleTableComponent {
   @Input() headers: string[] = [];
   @Input() rows: any[] = [];
   @Input() showEdit: boolean = false;
+  @Input() showUpdateStatus: boolean = false;
   @Output() onDelete: EventEmitter<any[]> = new EventEmitter();
   @Output() onEdit: EventEmitter<any[]> = new EventEmitter();
+  @Output() onUpdateStatus: EventEmitter<any[]> = new EventEmitter();
 
 
 
@@ -25,5 +27,9 @@ export class SimpleTableComponent {
 
   onEditClick(row: any): void {
     this.onEdit.emit(row);
+  }
+
+  onUpdateStatusClick(row: any): void {
+    this.onUpdateStatus.emit(row);
   }
 }

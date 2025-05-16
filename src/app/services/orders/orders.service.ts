@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import {catchError, Observable, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../environment/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrdersService {
-  private apiUrl = 'http://tu-backend.com/api/orders'; // Reemplaza con la URL de tu API de órdenes
+  private apiUrl = `${environment.apiUrl}/ordenes`; // Reemplaza con la URL de tu API de órdenes
 
   constructor(private http: HttpClient) { }
 
@@ -35,6 +36,14 @@ export class OrdersService {
   updateOrder(id: number, order: any): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.put<any>(url, order)
+      .pipe(
+        catchError(this.handleError<any>(`updateOrder id=${id}`))
+      );
+  }
+
+  updateOrderStatus(id: number, order: any): Observable<any> {
+    const url = `${this.apiUrl}/estado/${id}`;
+    return this.http.patch<any>(url, order)
       .pipe(
         catchError(this.handleError<any>(`updateOrder id=${id}`))
       );

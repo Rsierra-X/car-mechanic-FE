@@ -15,6 +15,7 @@ import {
   Validators
 } from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
+import {ClientModalComponent} from "./client-modal/client-modal.component";
 
 @Component({
   selector: 'app-cliente',
@@ -26,7 +27,8 @@ import {ToastrService} from "ngx-toastr";
     ButtonComponent,
     SimpleTableComponent,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ClientModalComponent
   ],
   templateUrl: './cliente.component.html',
   styleUrl: './cliente.component.css'
