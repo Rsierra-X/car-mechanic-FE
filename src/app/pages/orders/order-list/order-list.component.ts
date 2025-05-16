@@ -305,6 +305,7 @@ export class OrderListComponent implements OnInit {
       .map((item: any) => [
         { text: item.cantidad.toString(), alignment: 'center' },
         { text: 'Descripción del servicio', alignment: 'left' },
+        { text: 'Descripción del servicio', alignment: 'left' },
         { text: `Q${item.precioUnitario}`, alignment: 'right' }
       ]);
 
@@ -347,7 +348,8 @@ export class OrderListComponent implements OnInit {
             widths: ['10%', '*', '20%'],
             body: [
               [{ text: 'CANT', bold: true }, { text: 'DESCRIPCIÓN', bold: true }, { text: 'TOTAL', bold: true }],
-              ...repuestos
+              ...repuestos,
+              ...servicios
             ]
           },
           layout: 'lightHorizontalLines'
