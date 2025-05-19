@@ -1,6 +1,10 @@
 <app-catalog-layout title="Inventario"
                     [fields]="['Nombre']"
-                    (onSearch)="search($event)">
+                    (onSearch)="search($event)"
+                    [pdfTitle]="'Descargar Inventario'"
+                    [showExcel]="true"
+                    (exportPDF)="exportToExcel()"
+                    (onClearSearch)="loadProductos()">
   <div class="bg-white rounded-xl shadow p-6">
     <div class="flex justify-end items-center mb-4">
       <app-button btnId="btn-add-product"

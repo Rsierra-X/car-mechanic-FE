@@ -1,6 +1,7 @@
 <app-catalog-layout title="Marcas"
                     [fields]="['nombre','Tipo']"
-                    (onSearch)="search($event)">
+                    (onSearch)="search($event)"
+                    (onClearSearch)="loadData()">
   <div class="bg-white rounded-xl shadow p-6">
     <div class="flex justify-end items-center mb-4">
       <app-button btnId="btn-add-user"

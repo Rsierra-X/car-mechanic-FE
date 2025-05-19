@@ -64,8 +64,21 @@ export class ClienteComponent implements OnInit {
     });
   }
 
-  search(filtros: Record<string, string>) {
-    console.log('Filtros aplicados:', filtros);
+  search(dataSearch: any) {
+    const nombreQuery = (dataSearch.Nombre || '').toLowerCase().trim();
+    const apellidoQuery = (dataSearch.Apellido || '').toLowerCase().trim();
+    const telefonoQuery = (dataSearch.Telefono || '').toLowerCase().trim();
+    const nitQuery = (dataSearch.Nit || '').toLowerCase().trim();
+
+    // Siempre partir de la lista original
+    this.clientes = this.clientes.filter(cliente => {
+      const nombreMatch = !nombreQuery || cliente.Nombre.toLowerCase().includes(nombreQuery);
+      const apellidoMatch = !apellidoQuery || cliente.Apellido.toLowerCase().includes(apellidoQuery);
+      const telefonoMatch = !telefonoQuery || cliente.Telefono.toLowerCase().includes(telefonoQuery);
+      const nitMatch = !nitQuery || cliente.Nit.toLowerCase().includes(nitQuery);
+
+      return nombreMatch && apellidoMatch && telefonoMatch && nitMatch;
+    });
   }
 
   create() {

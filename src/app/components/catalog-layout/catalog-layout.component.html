@@ -1,5 +1,23 @@
 <div class="p-6 space-y-6">
-  <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+  @if (showExcel) {
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+      <app-button
+        btnId="btn-export"
+        iconType="xml"
+        btnText="{{pdfTitle}}"
+        margin=""
+        padding=""
+        btnColor="btn-blue"
+        (click)="exportPDF.emit()"
+      >
+      </app-button>
+    </div>
+  } @else {
+    <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+  }
+
+
 
   <!-- Search form -->
   <div class="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 items-end">
@@ -20,6 +38,11 @@
           (click)="emitSearch()"
           class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition">
           Buscar
+        </button>
+        <button
+          (click)="emitClearSearch()"
+          class="bg-red-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition">
+          Borrar
         </button>
       }
   </div>

@@ -125,6 +125,16 @@ export class ServicesProductComponent implements OnInit {
     this.marcaForm.reset();
   }
 
-  search(dataSearch: any) {}
+  search(dataSearch: any) {
+    const nombreQuery = (dataSearch.nombre || '').toLowerCase().trim();
+    const tipoQuery = (dataSearch.Tipo || '').toLowerCase().trim();
+
+    // Siempre partir de la lista original
+    this.marcas = this.marcas.filter(servicio => {
+      const nombreMatch = !nombreQuery || servicio.Nombre.toLowerCase().includes(nombreQuery);
+      const tipoMatch = !tipoQuery || servicio.Tipo.toLowerCase().includes(tipoQuery);
+      return nombreMatch && tipoMatch;
+    });
+  }
 
 }

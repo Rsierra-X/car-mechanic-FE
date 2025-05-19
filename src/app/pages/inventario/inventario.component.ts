@@ -8,6 +8,8 @@ import {ToastrService} from "ngx-toastr";
 import {NgForOf, NgIf} from "@angular/common";
 import {TipoProductoService} from "../../services/tipo-producto/tipo-producto.service";
 import {MarcasService} from "../../services/marcas/marcas.service";
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-inventario',
@@ -82,9 +84,15 @@ export class InventarioComponent implements OnInit {
     });
   }
 
-  search(filtros: Record<string, string>) {
-    console.log('Filtros aplicados:', filtros);
+  search(dataSearch: any) {
+    const nombreQuery = (dataSearch.Nombre || '').toLowerCase().trim();
 
+    // Siempre partir de la lista original
+    this.productosForTable = this.productosForTable.filter(servicio => {
+      console.log(servicio)
+      const nombreMatch = !nombreQuery || servicio.Nombre.toLowerCase().includes(nombreQuery);
+      return nombreMatch ;
+    });
   }
 
   createProduct() {
@@ -179,15 +187,24 @@ export class InventarioComponent implements OnInit {
     });
   }
 
-  exportToExcel() {
-    this.productoService.exportExcel().subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'inventario.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
+  exportToExcel(): void {
+    const dataExcel = this.productos.map((p: any) => ({
+      'ID Producto': p.ProductoID,
+      'Nombre': p.Nombre,
+      'Descripción': p.Descripcion,
+      'Cantidad': p.Cantidad,
+      'Precio Unitario': p.PrecioUnitario,
+      'Marca': p.marca ? p.marca.nombre : 'N/A',
+      'Tipo': p.tipo ? p.tipo.nombre : 'N/A',
+      'Fecha de Ingreso': new Date(p.FechaIngreso).toLocaleDateString()
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataExcel);
+    const workbook = { Sheets: { 'Inventario': worksheet }, SheetNames: ['Inventario'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, `inventario_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   cerrarModal() {

@@ -101,8 +101,15 @@ export class MarcasComponent implements OnInit {
     });
   }
 
-  search(dataSearch: any){
+  search(dataSearch: any) {
+    const nombreQuery = (dataSearch.nombre || '').toLowerCase().trim();
 
+    // Siempre partir de la lista original
+    this.marcas = this.marcas.filter(servicio => {
+      console.log(servicio)
+      const nombreMatch = !nombreQuery || servicio.nombre.toLowerCase().includes(nombreQuery);
+      return nombreMatch ;
+    });
   }
 
   delete(marcaId: any) {
