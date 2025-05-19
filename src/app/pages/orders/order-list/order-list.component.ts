@@ -14,6 +14,7 @@ import * as FileSaver from 'file-saver';
 import {Observable} from "rxjs";
 import {InventarioService} from "../../../services/inventario-service/inventario.service";
 import {ServicesProductsService} from "../../../services/service-product/services-products.service";
+import {NgIf} from "@angular/common";
 
 
 
@@ -45,11 +46,12 @@ interface OrderTableRow {
 @Component({
   selector: 'app-order-list',
   standalone: true,
-    imports: [
-        ButtonComponent,
-        CatalogLayoutComponent,
-        SimpleTableComponent
-    ],
+  imports: [
+    ButtonComponent,
+    CatalogLayoutComponent,
+    SimpleTableComponent,
+    NgIf
+  ],
   templateUrl: './order-list.component.html',
   styleUrl: './order-list.component.css'
 })
@@ -63,7 +65,7 @@ export class OrderListComponent implements OnInit {
   //searchTerm: string = ''; // You can add this if you want to implement search in the component
   products: any[] = [];
   services: any[] = [];
-
+  showReportModal = false;
   constructor(
     private orderService: OrdersService,
     private fb: FormBuilder,
@@ -271,8 +273,41 @@ export class OrderListComponent implements OnInit {
     this.generateOrderPDF(order.orderId, this.orders);
   }
 
-  exportToExcel(): void {
-    const dataExcel = this.orders.map((orden: any) => ({
+  exportDailyReport(): void {
+    const today = new Date();
+    const filteredOrders = this.orders.filter((orden: any) => {
+      const orderDate = new Date(orden.fecha);
+      return orderDate.toDateString() === today.toDateString();
+    });
+
+    this.generateExcel(filteredOrders, 'ordenes_dia');
+  }
+
+  exportMonthlyReport(): void {
+    const today = new Date();
+    const filteredOrders = this.orders.filter((orden: any) => {
+      const orderDate = new Date(orden.fecha);
+      return (
+        orderDate.getMonth() === today.getMonth() &&
+        orderDate.getFullYear() === today.getFullYear()
+      );
+    });
+
+    this.generateExcel(filteredOrders, 'ordenes_mes');
+  }
+
+  exportYearlyReport(): void {
+    const today = new Date();
+    const filteredOrders = this.orders.filter((orden: any) => {
+      const orderDate = new Date(orden.fecha);
+      return orderDate.getFullYear() === today.getFullYear();
+    });
+
+    this.generateExcel(filteredOrders, 'ordenes_anio');
+  }
+
+  generateExcel(data: any[], filename: string): void {
+    const dataExcel = data.map((orden: any) => ({
       'Número de Orden': orden.id,
       'Fecha': new Date(orden.fecha).toLocaleDateString(),
       'NIT del Cliente': orden.cliente?.Nit || 'N/A',
@@ -292,7 +327,7 @@ export class OrderListComponent implements OnInit {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(blob, `ordenes_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    FileSaver.saveAs(blob, `${filename}_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   async generateOrderPDF(orderId: number, orders: any[]) {
