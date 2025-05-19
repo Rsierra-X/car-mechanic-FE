@@ -9,7 +9,8 @@ import {OrdersService} from "../../../services/orders/orders.service";
 import {Router} from "@angular/router";
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import { vfs } from 'pdfmake/build/vfs_fonts';
-
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 
 
@@ -120,57 +121,22 @@ export class OrderListComponent implements OnInit {
     });
   }
 
-  // search(filters: Record<string, string>) {
-  //   console.log('Filtros aplicados:', filters);
-  //   // Implement your search logic here.  You'll likely need to call a method
-  //   // in your OrderService to fetch filtered data from the backend.
-  //   this.orderService.getOrders().subscribe( //Or a new method
-  //     (data) => {
-  //       this.orders = data.filter(order => {
-  //         let match = true;
-  //         for (const key in filters) {
-  //           if (filters[key]) { // Only filter if the filter value is not empty
-  //             const filterValue = filters[key].toLowerCase();
-  //             const orderValue = (order as any)[key]?.toString().toLowerCase() || ''; //Make sure the property exists in order
-  //             if (!orderValue.includes(filterValue)) {
-  //               match = false;
-  //               break;
-  //             }
-  //           }
-  //         }
-  //         return match;
-  //       });
-  //     },
-  //     (error) => {
-  //       console.error("Error searching orders", error);
-  //       this.toastr.error('Failed to search orders', 'Error');
-  //     }
-  //   );
-  // }
 
-  search(filters: Record<string, string>) {
-    console.log('Filtros aplicados:', filters);
-    this.orderService.getOrders().subscribe((orders) => {
-        this.orders = orders.filter((order) => {
-          let match = true;
-          for (const key in filters) {
-            if (filters[key]) {
-              const filterValue = filters[key].toLowerCase();
-              const orderValue = String((order as any)[key]).toLowerCase(); // Access property dynamically
+  search(dataSearch: any) {
+    const ordenQuery = (dataSearch['Número de Orden'] || '').toLowerCase().trim();
+    const nitQuery = (dataSearch['NIT del Cliente'] || '').toLowerCase().trim();
+    const clienteQuery = (dataSearch['Nombre del Cliente'] || '').toLowerCase().trim();
+    const estadoQuery = (dataSearch['Estado'] || '').toLowerCase().trim();
 
-              if (!orderValue.includes(filterValue)) {
-                match = false;
-              }
-            }
-          }
-          return match;
-        });
-      },
-      (error) => {
-        console.error("Error searching orders", error);
-        this.toastr.error('Failed to search orders', 'Error');
-      }
-    );
+    // Siempre partir de la lista original
+    this.OrderTableRow = this.OrderTableRow.filter(orden => {
+      const ordenMatch = !ordenQuery || orden.Orden.toString().includes(ordenQuery);
+      const nitMatch = !nitQuery || orden.NIT.toLowerCase().includes(nitQuery);
+      const clienteMatch = !clienteQuery || orden.Cliente.toLowerCase().includes(clienteQuery);
+      const estadoMatch = !estadoQuery || orden.Estado.toLowerCase().includes(estadoQuery);
+
+      return ordenMatch && nitMatch && clienteMatch && estadoMatch;
+    });
   }
 
   goToCreateOrder() {
@@ -283,6 +249,30 @@ export class OrderListComponent implements OnInit {
 
   downloadOrder(order: any) {
     this.generateOrderPDF(order.orderId, this.orders);
+  }
+
+  exportToExcel(): void {
+    const dataExcel = this.orders.map((orden: any) => ({
+      'Número de Orden': orden.id,
+      'Fecha': new Date(orden.fecha).toLocaleDateString(),
+      'NIT del Cliente': orden.cliente?.Nit || 'N/A',
+      'Nombre del Cliente': `${orden.cliente?.Nombre || ''} ${orden.cliente?.Apellido || ''}`.trim(),
+      'Placa del Vehículo': orden.vehiculo?.Placa || 'N/A',
+      'Marca': orden.vehiculo?.Marca || 'N/A',
+      'Modelo': orden.vehiculo?.Modelo || 'N/A',
+      'Año': orden.vehiculo?.Anio || 'N/A',
+      'Mano de Obra': orden.manoDeObra,
+      'Abono': orden.abono,
+      'Total': orden.total,
+      'Estado': orden.estado
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataExcel);
+    const workbook = { Sheets: { 'Órdenes': worksheet }, SheetNames: ['Órdenes'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, `ordenes_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   generateOrderPDF(orderId: number, orders: any[]) {

@@ -79,15 +79,19 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   exportarOrdenesEntregadas(): void {
-    const ordenesEntregadas = this.ordenes.filter(o => o.estado === 'Entregada');
+    const fechaActual = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
 
-    const dataExcel = ordenesEntregadas.map(o => ({
+    const ordenesEntregadasHoy = this.ordenes.filter(o =>
+      o.estado === 'Entregada' && o.fecha === fechaActual
+    );
+
+    const dataExcel = ordenesEntregadasHoy.map(o => ({
       'ID Orden': o.id,
       'Fecha': o.fecha,
       'Nombre Cliente': `${o.cliente.Nombre} ${o.cliente.Apellido}`,
       'Dirección': o.cliente.Direccion,
       'NIT': o.cliente.Nit,
-      'Monto': o.cliente.total,
+      'Monto': o.total,
       'Correo Electrónico': o.cliente.CorreoElectronico,
       'Teléfono': o.cliente.Telefono
     }));
@@ -97,7 +101,7 @@ export class DashboadComponent implements OnInit, OnDestroy, AfterViewInit {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(blob, `ordenes_entregadas_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    FileSaver.saveAs(blob, `ordenes_entregadas_${fechaActual}.xlsx`);
   }
 
   private destroyCharts(): void {

@@ -1,6 +1,10 @@
 <app-catalog-layout title="Órdenes"
-                    [fields]="['Número de Orden', 'Fecha de Orden', 'NIT del Cliente', 'Nombre del Cliente', 'Placa del Vehículo', 'Estado']"
-                    (onSearch)="search($event)">
+                    [fields]="['Número de Orden', 'NIT del Cliente', 'Nombre del Cliente', 'Estado']"
+                    (onSearch)="search($event)"
+                    (onClearSearch)="loadOrders()"
+                    [pdfTitle]="'Descargar órdenes'"
+                    [showExcel]="true"
+                    (exportPDF)="exportToExcel()">
   <div class="bg-white rounded-xl shadow p-6">
     <div class="flex justify-end items-center mb-4">
       <app-button
