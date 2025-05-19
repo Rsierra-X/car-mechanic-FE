@@ -11,6 +11,9 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import { vfs } from 'pdfmake/build/vfs_fonts';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import {Observable} from "rxjs";
+import {InventarioService} from "../../../services/inventario-service/inventario.service";
+import {ServicesProductsService} from "../../../services/service-product/services-products.service";
 
 
 
@@ -58,12 +61,16 @@ export class OrderListComponent implements OnInit {
   orders: Order[] = []; // Use the Order interface
   OrderTableRow: OrderTableRow[] = []; // Use the Order interface
   //searchTerm: string = ''; // You can add this if you want to implement search in the component
+  products: any[] = [];
+  services: any[] = [];
 
   constructor(
     private orderService: OrdersService,
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private router: Router  // Inject the router
+    private router: Router,  // Inject the router
+  private productService: InventarioService,
+    private servicesService: ServicesProductsService,
   ) {
 
     this.orderForm = this.fb.group({
@@ -81,6 +88,19 @@ export class OrderListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+    this.loadProductsAndServices();
+  }
+
+  private loadProductsAndServices(): void {
+    this.productService.getAll().subscribe({
+      next: (items) => {
+        this.products = items;
+      },
+      error: (err) => console.error('Error loading products/services:', err)
+    });
+    this.servicesService.getAll().subscribe((data) => {
+      this.services = data;
+    });
   }
 
   loadOrders() {
@@ -275,18 +295,28 @@ export class OrderListComponent implements OnInit {
     FileSaver.saveAs(blob, `ordenes_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
-  generateOrderPDF(orderId: number, orders: any[]) {
+  async generateOrderPDF(orderId: number, orders: any[]) {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
 
     const cliente = order.cliente;
     const vehiculo = order.vehiculo;
 
+    // Cargar imagen del logo desde assets
+    const logoBase64 = await fetch('assets/images/ttss.png')
+      .then(res => res.blob())
+      .then(blob => new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      }));
+
     const repuestos = order.detalles
       .filter((d: any) => d.tipo === 'producto')
       .map((item: any) => [
         { text: item.cantidad.toString(), alignment: 'center' },
-        { text: 'Descripción del producto', alignment: 'left' },
+        { text: this.getProducto(item.productoId), alignment: 'left' },
         { text: `Q${item.precioUnitario}`, alignment: 'right' }
       ]);
 
@@ -294,72 +324,116 @@ export class OrderListComponent implements OnInit {
       .filter((d: any) => d.tipo === 'servicio')
       .map((item: any) => [
         { text: item.cantidad.toString(), alignment: 'center' },
-        { text: 'Descripción del servicio', alignment: 'left' },
-        { text: 'Descripción del servicio', alignment: 'left' },
+        { text: this.getServicio(item.servicioId), alignment: 'left' },
         { text: `Q${item.precioUnitario}`, alignment: 'right' }
       ]);
+
+    const totalRepuestos = repuestos.reduce((sum: any, i: any) => sum + parseFloat(i[2].text.replace('Q', '')), 0);
+    const totalServicios = servicios.reduce((sum: any, i: any) => sum + parseFloat(i[2].text.replace('Q', '')), 0);
 
     const docDefinition: any = {
       content: [
         {
-          text: 'Automotriz "Los Dos"',
-          style: 'header',
-          alignment: 'center',
-          margin: [0, 0, 0, 10]
+          columns: [
+            {
+              image: logoBase64,
+              width: 100
+            },
+            {
+              text: 'ORDEN DE TRABAJO',
+              alignment: 'right',
+              style: 'header',
+              margin: [0, 20, 0, 0]
+            }
+          ]
         },
         {
           text: [
-            { text: 'Dirección: ', bold: true },
-            '19 avenida 42-25 zona 8 Guatemala, Guatemala\n',
-            { text: 'Email: ', bold: true },
-            'automotrizlosdos@gmail.com\n',
-            { text: 'Tel: ', bold: true },
-            '52520028\n',
-            { text: 'Fecha: ', bold: true },
-            `${order.fecha}\n`
+            { text: 'Automotriz "Los Dos"\n', style: 'subheader' },
+            { text: 'Dirección: ', bold: true }, '19 avenida 42-25 zona 8 Guatemala, Guatemala\n',
+            { text: 'Email: ', bold: true }, 'automotrizlosdos@gmail.com\n',
+            { text: 'Tel: ', bold: true }, '52520028\n',
+            { text: 'Fecha: ', bold: true }, `${order.fecha}\n`
           ],
-          style: 'info',
-          margin: [0, 0, 0, 10]
+          margin: [0, 10, 0, 10],
+          style: 'info'
         },
         {
           columns: [
-            { text: `NOMBRE:\n${cliente.Nombre} ${cliente.Apellido}`, width: '50%' },
             {
-              text: `VEHÍCULO:\nMarca: ${vehiculo.Marca}\nModelo: ${vehiculo.Modelo}\nAño: ${vehiculo.Anio}\nColor: ${vehiculo.Color}\nPlaca: ${vehiculo.Placa}`,
-              width: '50%'
+              text: `\nCliente:\n${cliente.Nombre} ${cliente.Apellido}\nNIT: ${cliente.Nit}\nTel: ${cliente.Telefono}\nEmail: ${cliente.CorreoElectronico}\nDirección: ${cliente.Direccion}`,
+              width: '50%',
+              style: 'info'
+            },
+            {
+              text: `\nVehículo:\nMarca: ${vehiculo.Marca}\nModelo: ${vehiculo.Modelo}\nAño: ${vehiculo.Anio}\nColor: ${vehiculo.Color}\nPlaca: ${vehiculo.Placa}`,
+              width: '50%',
+              style: 'info'
             }
           ],
           margin: [0, 0, 0, 10]
         },
-        { text: 'ORDEN DE TRABAJO', style: 'subheader' },
-        { text: 'REPUESTOS', bold: true, margin: [0, 5, 0, 5] },
+        { text: 'DETALLES DE LA ORDEN', style: 'subheader' },
+
+        { text: 'Repuestos', bold: true, margin: [0, 10, 0, 5] },
         {
           table: {
             widths: ['10%', '*', '20%'],
             body: [
-              [{ text: 'CANT', bold: true }, { text: 'DESCRIPCIÓN', bold: true }, { text: 'TOTAL', bold: true }],
-              ...repuestos,
+              [
+                { text: 'Cant', bold: true, alignment: 'center' },
+                { text: 'Descripción', bold: true },
+                { text: 'Precio', bold: true, alignment: 'right' }
+              ],
+              ...repuestos
+            ]
+          },
+          layout: 'lightHorizontalLines'
+        },
+
+        {
+          text: `Total Repuestos: Q${totalRepuestos.toFixed(2)}`,
+          alignment: 'right',
+          margin: [0, 5, 0, 10]
+        },
+
+        { text: 'Servicios', bold: true, margin: [0, 10, 0, 5] },
+        {
+          table: {
+            widths: ['10%', '*', '20%'],
+            body: [
+              [
+                { text: 'Cant', bold: true, alignment: 'center' },
+                { text: 'Descripción', bold: true },
+                { text: 'Precio', bold: true, alignment: 'right' }
+              ],
               ...servicios
             ]
           },
           layout: 'lightHorizontalLines'
         },
+
         {
-          text: `Total Repuestos: Q${repuestos.reduce((sum:any, i:any) => sum + parseFloat(i[2].text.replace('Q', '')), 0).toFixed(2)}`,
+          text: `Total Servicios: Q${totalServicios.toFixed(2)}`,
           alignment: 'right',
           margin: [0, 5, 0, 10]
         },
-        { text: 'MANO DE OBRA', bold: true },
+
+        { text: 'Mano de Obra', bold: true, margin: [0, 10, 0, 5] },
         {
           text: `Descripción: Desmontar y montar piezas según orden\nTotal Mano de obra: Q${parseFloat(order.manoDeObra).toFixed(2)}`,
-          margin: [0, 5, 0, 10]
+          margin: [0, 0, 0, 10]
+        },
+
+        {
+          text: `Resumen de Pago`,
+          bold: true,
+          margin: [0, 10, 0, 5]
         },
         {
-          text: `SUBTOTAL: Q${(
-            parseFloat(order.total) + parseFloat(order.abono)
-          ).toFixed(2)}\nABONO: Q${parseFloat(order.abono).toFixed(2)}\nTOTAL: Q${parseFloat(order.total).toFixed(2)}`,
+          text: `Subtotal: Q${(parseFloat(order.total) + parseFloat(order.abono)).toFixed(2)}\nAbono: Q${parseFloat(order.abono).toFixed(2)}\nTOTAL A PAGAR: Q${parseFloat(order.total).toFixed(2)}`,
           alignment: 'right',
-          margin: [0, 10, 0, 0]
+          margin: [0, 0, 0, 0]
         }
       ],
       styles: {
@@ -368,16 +442,27 @@ export class OrderListComponent implements OnInit {
           bold: true
         },
         subheader: {
-          fontSize: 15,
+          fontSize: 14,
           bold: true,
           margin: [0, 10, 0, 5]
         },
         info: {
           fontSize: 10
         }
+      },
+      defaultStyle: {
+        fontSize: 10
       }
     };
 
     pdfMake.createPdf(docDefinition).open();
+  }
+
+  getServicio(servicioId: number): any {
+    return this.services.find(s => s.ServicioID === servicioId)?.Nombre || '';
+  }
+
+  getProducto(productoId: number): any {
+    return this.products.find(p => p.ProductoID === productoId)?.Nombre || '';
   }
 }
